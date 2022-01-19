@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-let port = process.env.PORT || 8010;
+let port = process.env.MONGODB_URI
 
 // les routes
 const prefix = '/api';
