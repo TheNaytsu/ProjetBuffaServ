@@ -14,11 +14,21 @@ function getAssignments(req, res){
 */
 // Récupérer tous les assignments (GET)
 function getAssignments(req, res) {
-    var aggregateQuery = Assignment.aggregate();
+   if(req.query.filtrerR == undefined){
+        var aggregateQuery = Assignment.aggregate();
+    }
+    else if(req.query.filtrerR == "rendu"){
+        var filtre = true;
+        var aggregateQuery = Assignment.aggregate([{$match:{rendu:{$eq:filtre}}}]);
+        }
+    else{
+        var filtre = false;
+        var aggregateQuery = Assignment.aggregate([{$match:{rendu:{$eq:filtre}}}]);
+    }
     Assignment.aggregatePaginate(aggregateQuery,
       {
-        page: parseInt(req.query.page) || 1,
-        limit: parseInt(req.query.limit) || 10,
+          page: parseInt(req.query.page) || 1,
+          limit: parseInt(req.query.limit) || 10,
       },
       (err, assignments) => {
         if (err) {
@@ -32,7 +42,7 @@ function getAssignments(req, res) {
 // Récupérer un assignment par son id (GET)
 function getAssignment(req, res){
     let assignmentId = req.params.id;
-
+    console.log(assignmentId)
     Assignment.findOne({id: assignmentId}, (err, assignment) =>{
         if(err){res.send(err)}
         res.json(assignment);
