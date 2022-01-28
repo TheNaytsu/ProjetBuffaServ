@@ -39,7 +39,8 @@ router.post('/login', async (req, res) =>{
 
         res.cookie('jwt',token, {
             httpOnly: false,
-            maxAge: 24*60*60*1000
+            maxAge: 24*60*60*1000,
+            domain: "https://projetbuffaclient.herokuapp.com/"
         })
 
         res.status(200).send({ auth: true, token: token });
