@@ -2,10 +2,14 @@ let express = require('express');
 let app = express();
 let bodyParser = require('body-parser');
 let assignment = require('./routes/assignments');
+var AuthController = require('./auth/AuthController');
+const cookieParser= require('cookie-parser');
+const cors = require('cors');
 
 let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 //mongoose.set('debug', true);
+
 
 // remplacer toute cette chaine par l'URI de connexion à votre propre base dans le cloud s
 const uri = 'mongodb+srv://Yann:123@cluster0.bpzjc.mongodb.net/assignments?retryWrites=true&w=majority';
@@ -16,6 +20,9 @@ const options = {
   useFindAndModify:false
 };
 
+var UserController = require('./user/UserController');
+app.use('/users', UserController);
+app.use(express.json())
 mongoose.connect(uri, options)
   .then(() => {
     console.log("Connecté à la base MongoDB assignments dans le cloud !");
@@ -25,15 +32,17 @@ mongoose.connect(uri, options)
     err => {
       console.log('Erreur de connexion: ', err);
     });
-
 // Pour accepter les connexions cross-domain (CORS)
+app.use(cookieParser())
+app.use(cors({
+    credentials: true,
+    origin:['http://localhost:4200']
+}))
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
-
+app.use('/api/auth', AuthController);
 // Pour les formulaires
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());

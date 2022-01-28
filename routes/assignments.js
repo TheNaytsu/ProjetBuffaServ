@@ -14,16 +14,28 @@ function getAssignments(req, res){
 */
 // Récupérer tous les assignments (GET)
 function getAssignments(req, res) {
+    var reggea = new RegExp(req.query.champs)
    if(req.query.filtrerR == undefined){
-        var aggregateQuery = Assignment.aggregate();
+        var aggregateQuery = Assignment.aggregate([{
+            $match: {
+                nom:{$regex: reggea}
+            }}]);
     }
     else if(req.query.filtrerR == "rendu"){
         var filtre = true;
-        var aggregateQuery = Assignment.aggregate([{$match:{rendu:{$eq:filtre}}}]);
+        var aggregateQuery = Assignment.aggregate([{
+            $match: {
+                rendu: {$eq: filtre},
+                nom: {$regex: reggea}
+            }}]);
         }
     else{
         var filtre = false;
-        var aggregateQuery = Assignment.aggregate([{$match:{rendu:{$eq:filtre}}}]);
+        var aggregateQuery = Assignment.aggregate([{
+            $match:{
+                rendu:{$eq:filtre},
+                nom: {$regex: reggea}
+            }}]);
     }
     Assignment.aggregatePaginate(aggregateQuery,
       {
