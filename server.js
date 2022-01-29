@@ -4,7 +4,7 @@ const dbConfig = require("./app/config/db.config");
 const assignment = require('./app/routes/assignments');
 const app = express();
 var corsOptions = {
-    origin: "http://localhost:4200"
+    origin: ["http://localhost:4200","https://projetbuffaclient.herokuapp.com/"]
 };
 
 app.use(cors(corsOptions));
