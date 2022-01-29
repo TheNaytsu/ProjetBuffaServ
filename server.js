@@ -1,44 +1,32 @@
 const express = require("express");
 const cors = require("cors");
-const dbConfig = require("./app/config/db.config");
 const assignment = require('./app/routes/assignments');
 const app = express();
-var corsOptions = {
-    origin:"https://projetbuffaclient.herokuapp.com/",
-};
 
 app.use(cors())
 
-// parse requests of content-type - application/json
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+
 app.use(express.urlencoded({ extended: true }));
 
-/*app.use((req, res, next) => {
-    res.append('Access-Control-Allow-Origin', '*');
-})*/
-
 const db = require("./app/models");
-const Role = db.role;
 
 
 db.mongoose
-    .connect(`mongodb+srv://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+    .connect('mongodb+srv://Yann:123@cluster0.bpzjc.mongodb.net/assignments?retryWrites=true&w=majority', {
         useNewUrlParser: true,
         useUnifiedTopology: true
     })
     .then(() => {
-        console.log("Successfully connect to MongoDB.");
-        initial();
+        console.log("Connexion avec MongoDb validé");
     })
     .catch(err => {
-        console.error("Connection error", err);
+        console.error("Erreur de connexion", err);
         process.exit();
     });
 
 
-//routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 app.route('/api/assignments')
@@ -50,35 +38,8 @@ app.route('/api/assignments/:id')
     .get(assignment.getAssignment)
     .delete(assignment.deleteAssignment);
 
-// set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
+    console.log(`Le serveur est lancé sur le port ${PORT}.`);
 });
 
-
-function initial() {
-    Role.estimatedDocumentCount((err, count) => {
-        if (!err && count === 0) {
-            new Role({
-                name: "user"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
-
-                console.log("added 'user' to roles collection");
-            });
-
-            new Role({
-                name: "admin"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
-
-                console.log("added 'admin' to roles collection");
-            });
-        }
-    });
-}
