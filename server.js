@@ -4,7 +4,7 @@ const dbConfig = require("./app/config/db.config");
 const assignment = require('./app/routes/assignments');
 const app = express();
 var corsOptions = {
-    origin:"https://projetbuffaclient.herokuapp.com/"
+    origin:"https://projetbuffaclient.herokuapp.com/",
 };
 
 app.use(cors(corsOptions));
@@ -15,8 +15,19 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+    res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "'Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token'",
+    });
+
+    next();
+});
+
 const db = require("./app/models");
 const Role = db.role;
+
 
 db.mongoose
     .connect(`mongodb+srv://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
